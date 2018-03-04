@@ -5,7 +5,7 @@ date: 2018-03-03 20:00:00
 comments: true
 ---
 
-# 시작하기전에
+## 시작하기전에
 
 서비스를 고객에게 제공할때 응답 속도는 고려해야할 중요한 지표 중 하나입니다.  
 
@@ -17,7 +17,7 @@ Google은 "모바일 고객의 53%가 3초이내에 페이지가 로드되지 �
 
 <!-- more --> 
 
-## Redis 간단 설명
+### Redis 간단 설명
 
 
 Redis는 대표적인 인메모리 Key-Value 스토어 데이터 베이스로 String, Hash, Set 등의 다양한 Data Structure를 제공합니다.
@@ -30,7 +30,7 @@ Redis는 대표적인 인메모리 Key-Value 스토어 데이터 베이스로 St
 https://redislabs.com/blog/the-proven-redis-performance/
 
 
-# 구현 목표
+## 구현 목표
 
 
 이번 기고에서 적용해 볼 서비스와 스펙은 다음과 같습니다.
@@ -52,7 +52,7 @@ IP에 따른 위치는 자주 바뀌는 값이 아니므로, 이를 캐시에 �
 
 
 
-# Ncloud Redis 신청하기
+## Ncloud Redis 신청하기
 
 Redis는 Ncloud에서 Cloud DB for Redis 라는 이름으로 서비스 되고 있습니다.  아래의 그림과 같이 간단한 입력만으로
 
@@ -94,9 +94,9 @@ ACG 메뉴로 이동하여 생성한 Redis DB의 ACG에서 아래와 같이 서�
 
 
 
-# Redis를 이용한 캐시 시스템 구축 구현
+## Redis를 이용한 캐시 시스템 구축 구현
 
-## Redis 이용 모듈 작성
+### Redis 이용 모듈 작성
 
 Redis 모듈은 Node.js에서 싱글톤으로 많이 사용됩니다. 싱글톤 패턴은 간단히 말해 하나의 프린터를 두고, 여러대의 컴퓨터가 공유하는 예와 유사합니다.  서버 시작 시 connect() 함수를 실행하여 Redis Client를 생성하고, 그 생성된 Client를 다른 모듈에서 사용하는 형태로 이용하면 되겠습니다.
 
@@ -121,7 +121,7 @@ module.exports = (function() {
 })();
 ```
 
-## Ncloud Geolocation 모듈 작성
+### Ncloud Geolocation 모듈 작성
 
 Ncloud의 Geolocation 서비스를 Node.js에서 이용하기 위해, 이미 공개되어 있는 ncloud package(https://www.npmjs.com/package/ncloud)를 이용하였습니다.  getLocation함수로 이를 wrapping하여 사용하도록 의도하였으며, 함수 호출전 ipv6에서  ipv4의 주소 공간 변경을 위해서, ipv6에서 ipv4의 주소 매핑을 위해 사용되는 prefix 인 ::ffff:를 제거합니다. 주소 공간에 대해서는 https://ko.wikipedia.org/wiki/IPv6 의 특수 주소 공간을 참조하세요.
 
@@ -154,7 +154,7 @@ module.exports = (function() {
 })();
 ```
 
-## 캐시 모듈 작성
+### 캐시 모듈 작성
 
 캐시 모듈는 범용적으로 사용할 수 있도록, 함수와 캐시의 TTL를 등록하여 사용하는 형태로 작성합니다.
 함수 호출시 캐시 모듈은 함수 호출 인자들을 key로 이용하여 redis에 해당 key로 된 value가 있는지 찾습니다.
@@ -216,7 +216,7 @@ module.exports = (function() {
 })();
 ```
 
-##  메인함수 작성
+###  메인함수 작성
 
 메인 함수에서는 지금까지 작성한 모듈들을 이용해줍니다 ^^
 
@@ -285,7 +285,7 @@ geolocation의 결과가 도출된 것을 볼 수 있네요. 앞서 콘솔 메�
 새롭게 캐시를 생성하는것을 확인할 수 있습니다 ^^
 
 
-# 성능 테스트
+## 성능 테스트
 
 Redis 캐시를 적용했을 때와 미적용했을 때의 성능 비교를 해보겠습니다.
 
@@ -302,7 +302,7 @@ $ loadtest http://<구축한 API 서버 주소>/user/geolocation -t 20 -c 10 --
 ```
 
 
-## 캐시 적용전 
+### 캐시 적용전 
 ```
 INFO Requests: 0, requests per second: 0, mean latency: 0 ms
 INFO Requests: 50, requests per second: 10, mean latency: 40.4 ms
@@ -322,7 +322,7 @@ INFO 99% 63 ms
 INFO 100% 64 ms (longest request)
 ```
 
-## 캐시 적용 후
+### 캐시 적용 후
 ```
 INFO Requests: 0, requests per second: 0, mean latency: 0 ms
 INFO Requests: 49, requests per second: 10, mean latency: 15.6 ms
