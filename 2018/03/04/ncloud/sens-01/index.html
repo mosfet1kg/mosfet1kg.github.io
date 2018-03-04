@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+
+    
+
+    
+
+    <title>Ncloud SENS를 이용하여 나만의 이벤트 통보 시스템 만들기 | gbChoi&#39;s Blog</title>
+    <meta name="author" content="gbChoi" />
+    <meta name="version" content="1.0.0" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="시작하기 전에서비스를 운영하는 것은 많은 어려움이 따르는데요.
+특히 안정적으로 지속적인 서비스 운영을 위해서는 많은 신경이 쓰일 수 밖에 없습니다.
+운영자가 개입이 요구되는 예상치 못한 이벤트 발생 시, 이를 빨리 캐치 후 대응하여 서비스 중단을 최소화 하는 것이 필수적입니다.
+이번 기고에서는 Ncloud SENS를 이용하여 나만의 이벤트 통보 시스템 만들기를 기술해보겠습니다.
+ 
+Ncloud SENS 간단 설명SENS는 Simple &amp;amp;" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+    <meta name="baidu-site-verification" content="F0CXvmUgA9" />
+
+    
+    
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div class="app">
+        <header class="header clearfix">
+    <div id="nav" class="nav">
+    <button id="open-panel" class="open-panel"><i class="icon-library"></i></button>
+
+    <nav class="nav-inner">
+
+        
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/categories/main">main</a>
+        </li>
+        
+        
+        
+        <li class="nav-item">
+            <a class="nav-link" href="/categories/ncloud">ncloud</a>
+        </li>
+        
+        
+        
+
+    </nav>
+</div>
+
+    <aside id="aside" class="aside">
+    <div id="aside-mask" class="aside-mask"></div>
+    <div id="aside-inner" class="aside-inner">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit"><i class="icon-search-stroke"></i></button><input type="hidden" name="sitesearch" value="https://mosfet1kg.github.io"></form>
+
+        
+        
+        
+        
+
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#시작하기-전에"><span class="toc-number">1.</span> <span class="toc-text">시작하기 전에</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ncloud-SENS-간단-설명"><span class="toc-number">1.1.</span> <span class="toc-text">Ncloud SENS 간단 설명</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#구현목표"><span class="toc-number">2.</span> <span class="toc-text">구현목표</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SENS-API-분석"><span class="toc-number">3.</span> <span class="toc-text">SENS API 분석</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#X-NCP-auth-key"><span class="toc-number">3.1.</span> <span class="toc-text">X-NCP-auth-key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#X-NCP-service-secret-amp-serviceId"><span class="toc-number">3.2.</span> <span class="toc-text">X-NCP-service-secret &amp; serviceId</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ncloud-SENS를-이용한-이벤트-통보-시스템-구현"><span class="toc-number">4.</span> <span class="toc-text">Ncloud SENS를 이용한 이벤트 통보 시스템 구현</span></a></li></ol>
+        
+    </div>
+</aside>
+
+</header>
+
+        <div id="content" class="content"><article class="article" itemscope itemprop="blogPost">
+    
+    <header class="article-header">
+        
+        <h1 itemprop="name">
+            Ncloud SENS를 이용하여 나만의 이벤트 통보 시스템 만들기
+        </h1>
+        
+        <div class="article-meta clearfix">
+            <a class="article-date" href="/2018/03/04/ncloud/sens-01/">
+    
+    <i class="icon-calendar"></i>
+    
+    <time datetime="2018-03-04T11:00:00.000Z" itemprop="datePublished">2018-03-04</time>
+</a>
+
+            
+
+        </div>
+    </header>
+    
+    <section class="article-body markdown-body">
+        
+        <h2 id="시작하기-전에"><a href="#시작하기-전에" class="headerlink" title="시작하기 전에"></a>시작하기 전에</h2><p>서비스를 운영하는 것은 많은 어려움이 따르는데요.</p>
+<p>특히 안정적으로 지속적인 서비스 운영을 위해서는 많은 신경이 쓰일 수 밖에 없습니다.</p>
+<p>운영자가 개입이 요구되는 예상치 못한 이벤트 발생 시, 이를 빨리 캐치 후 대응하여 서비스 중단을 최소화 하는 것이 필수적입니다.</p>
+<p>이번 기고에서는 Ncloud SENS를 이용하여 나만의 이벤트 통보 시스템 만들기를 기술해보겠습니다.</p>
+<a id="more"></a> 
+<h3 id="Ncloud-SENS-간단-설명"><a href="#Ncloud-SENS-간단-설명" class="headerlink" title="Ncloud SENS 간단 설명"></a>Ncloud SENS 간단 설명</h3><p>SENS는 Simple &amp; Easy Notification Service의 약자로서, 이를 이용하면 우리들의 서비스에 메시지 및 알람 전송 기능을 간편하게 구현할 수 있습니다.</p>
+<p>이번 기고에서 다루어볼 예제는 SMS 발송 기능을 이용할 예정인데요, NCLOUD SENS는 SMS발송 기능을 OPEN API로 제공하고 있어 우리들이 구현한 로직 속에서 알람 전송을 구현할 수 있습니다. </p>
+<h2 id="구현목표"><a href="#구현목표" class="headerlink" title="구현목표"></a>구현목표</h2><p><strong>[그림. 나만의 이벤트 통보 시스템 구조]</strong></p>
+<p><img src="/assets/ncloud-sens-01.png" alt=""></p>
+<p>구현에 앞서 먼저 해당 시스템에 대한 스펙을 정의해보면 다음과 같습니다.</p>
+<blockquote>
+<p><strong>OS</strong>: Linux 계열 운영체제<br><strong>Platform</strong>: Nodejs<br><strong>이벤트 감지 대상</strong>: 로그파일<br><strong>이벤트 통보 방법</strong>: SMS(SENS OPEN API 이용)</p>
+</blockquote>
+<p>SENS는 이를 우리들이 구현한 로직 속에서 메시지를 전송할 수 있도록 OPEN API를 제공하고 있습니다. </p>
+<p>이를 이용하여 특정 이벤트 발생시 SMS를 전송 받도록 구현하면 되겠습니다 ^^</p>
+<h2 id="SENS-API-분석"><a href="#SENS-API-분석" class="headerlink" title="SENS API 분석"></a>SENS API 분석</h2><p>SENS에 대한 OPEN API 문서(<a href="https://sens.ncloud.com/assets/html/docs/index.html?url=https://api-sens.ncloud.com/docs/openapi/ko)를" target="_blank" rel="noopener">https://sens.ncloud.com/assets/html/docs/index.html?url=https://api-sens.ncloud.com/docs/openapi/ko)를</a> 확인해보도록 하겠습니다.</p>
+<p><img src="/assets/ncloud-sens-02.png" alt=""></p>
+<p>SMS에 관련된  발신자, 수신자, 메시지외에도 인증을 위한 X-NCP-auth-key, X-NCP-service-secret, serviceId 세가지 값이 필요합니다.</p>
+<h3 id="X-NCP-auth-key"><a href="#X-NCP-auth-key" class="headerlink" title="X-NCP-auth-key"></a>X-NCP-auth-key</h3><p> X-NCP-auth-key값은 Ncloud 포털에서 얻을 수 있습니다.</p>
+<p>마이페이지 &gt; 계정관리 &gt; 인증 관리 탭에 확인 할 수 있는 API 인증키 관리 부분에서 확인할 수 있는 Access Key ID가 이에 해당합니다.</p>
+<p>인증키가 하나도 없는 경우에는 추가로 하나 생성하여 해당 키를 획득해야합니다.</p>
+<p><img src="/assets/ncloud-sens-03.png" alt=""></p>
+<h3 id="X-NCP-service-secret-amp-serviceId"><a href="#X-NCP-service-secret-amp-serviceId" class="headerlink" title="X-NCP-service-secret &amp; serviceId"></a>X-NCP-service-secret &amp; serviceId</h3><p> X-NCP-service-secret, serviceId 이 두 값은 SENS(<a href="https://sens.ncloud.com)의" target="_blank" rel="noopener">https://sens.ncloud.com)의</a> 프로젝트 메뉴에서 획득할 수 있습니다.</p>
+<p>생성한 프로젝트에서 열쇠 모양을 클릭하면 아래와 같은 창이 팝업됩니다. 여기에 ID와 Secret Key에 해당하는 부분이 우리가 원하는 값이 됩니다.</p>
+<p><img src="/assets/ncloud-sens-04.png" alt=""></p>
+<p>자 이제 OEPN API를 이용하여 SENS를 사용하기위한 인증키 값들을 모두 획득하였습니다.</p>
+<p>이제 우리가 구축할 시스템에서 특정 이벤트가 발생시 SENS에 RESTful Message를 전송하여, 우리에게 통보가 되도록 하는 로직만 구성하면 됩니다.</p>
+<h2 id="Ncloud-SENS를-이용한-이벤트-통보-시스템-구현"><a href="#Ncloud-SENS를-이용한-이벤트-통보-시스템-구현" class="headerlink" title="Ncloud SENS를 이용한 이벤트 통보 시스템 구현"></a>Ncloud SENS를 이용한 이벤트 통보 시스템 구현</h2><p>앞서 정의한 스펙에 따라 로그파일에서 특정 메시지가 발견 시, 이벤트를 통보하도록 구성하겠습니다.</p>
+<p>이를 위해서 Nodejs패키지인 tail package(<a href="https://github.com/lucagrulla/node-tail" target="_blank" rel="noopener">https://github.com/lucagrulla/node-tail</a>) 를 사용하겠습니다. tail package는 마지막 행을 기준으로</p>
+<p>새로운 메시지가 기록될 시, 이를 우리가 알 수 있도록 event listener 에 이벤트를 발생시켜줍니다.</p>
+<p><strong>[코드 예제: tail 사용 예제]</strong><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Tail = <span class="built_in">require</span>(<span class="string">'tail'</span>).Tail;</span><br><span class="line"></span><br><span class="line">tail = <span class="keyword">new</span> Tail(<span class="string">"fileToTail"</span>);</span><br><span class="line"></span><br><span class="line">tail.on(<span class="string">"line"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">tail.on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'ERROR: '</span>, error);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>새로운 로그가 추가될때 마다, 이를 “line” 이벤트 리스너에서 확인 할 수 있습니다.</p>
+<p>우리는 이 data값에서 특정 메시지가 들어 있는 경우, OPEN API를 사용하면 되겠습니다.</p>
+<p>SENS OPEN API를 사용하기 위한 RESTful 메시지를 생성하기 위한 모듈로 axios(<a href="https://github.com/axios/axios)를" target="_blank" rel="noopener">https://github.com/axios/axios)를</a> 사용하였습니다.</p>
+<p><strong>[코드 예제: SENS OPEN API를 위한 클라이언트]</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> axios = <span class="built_in">require</span>(<span class="string">'axios'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; [<span class="string">'X-NCP-auth-key'</span>]: ncpAuthKey, [<span class="string">'X-NCP-service-secret'</span>]: sensServiceSecret, serviceId &#125; = process.env;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    sendSms: <span class="function">(<span class="params">&#123; <span class="keyword">from</span>, to, content &#125;, callback</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> message = &#123;</span><br><span class="line">        type: <span class="string">"sms"</span>,</span><br><span class="line">        <span class="keyword">from</span>,</span><br><span class="line">        to, <span class="comment">// array</span></span><br><span class="line">        content</span><br><span class="line">      &#125;;</span><br><span class="line"></span><br><span class="line">      axios(&#123;</span><br><span class="line">        method: <span class="string">'POST'</span>,</span><br><span class="line">        url: <span class="string">`https://api-sens.ncloud.com/v1/sms/services/<span class="subst">$&#123; <span class="built_in">encodeURI</span>( serviceId ) &#125;</span>/messages`</span>,</span><br><span class="line">        headers: &#123;</span><br><span class="line">          <span class="string">'X-NCP-auth-key'</span>: ncpAuthKey,</span><br><span class="line">          <span class="string">'X-NCP-service-secret'</span>: sensServiceSecret</span><br><span class="line">        &#125;,</span><br><span class="line">        data: message</span><br><span class="line">      &#125;)</span><br><span class="line">        .then( <span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">          callback( <span class="literal">null</span>, res.data );</span><br><span class="line">        &#125;)</span><br><span class="line">        .catch( <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">          callback( err );</span><br><span class="line">        &#125;) <span class="comment">// end axios Promise</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>인증 값들로 필요한 X-NCP-auth-key, X-NCP-service-secret, serviceId 이 세가지 값들은 앞서 획득한 값들을 이용합니다.</p>
+<p>serviceId의 경우 URI의 Path로 이용되므로 URI 인코딩을 해줘야함에 유의합니다. 해당 값들을 헤더와 URI에 입력하고,</p>
+<p>message부분에 수신자, 발신자, 메시지 내용을 입력하면 OPEN API를 활용할 수 있습니다 ^^  </p>
+<p>이제 “hello world” 로그 메시지가 발생했을 때 “An Event Occurred”라는 SMS를 통보받는 로직을 구현해보겠습니다.</p>
+<p><strong>[코드 예제: hello world 시 SENS OPEN API로 메시지 전송]</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">'dotenv'</span>).config();</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> tracker = <span class="built_in">require</span>(<span class="string">'./helpers/tracker'</span>);</span><br><span class="line"><span class="keyword">const</span> sensApi = <span class="built_in">require</span>(<span class="string">'./helpers/ncloudSens'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> filePath = path.join( __dirname, <span class="string">'log.txt'</span> );</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> tail = tracker.createTracker( filePath );</span><br><span class="line"></span><br><span class="line">tail.on(<span class="string">"line"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> ( data.includes(<span class="string">"hello world"</span>) ) &#123;</span><br><span class="line">    sensApi.sendSms(&#123;</span><br><span class="line">      <span class="keyword">from</span>: <span class="string">"01028640911"</span>,</span><br><span class="line">      to: [<span class="string">"01028640911"</span>],</span><br><span class="line">      content: <span class="string">"An Event Occurred"</span></span><br><span class="line">    &#125;, (error, result) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> ( error ) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">console</span>.log( error.message );</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">console</span>.log( result );</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">tail.on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'ERROR: '</span>, error);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>line이벤트를 통해 새로운 로그 메시지가 발생하면 이를 확인 할 수 있습니다. “hello world”메시지가 있다면, 방금전 구현했던 SENS 클라이언트를 통해</p>
+<p>SMS통보를 위한 RESTful메시지를 생성하면 되겠습니다</p>
+<p>테스트를 위해서 작성한 시스템을 실행하고,  아래와 같이 log.txt에 “hello world” 메시지를 기록합니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> “hello world” &gt;&gt; log.txt</span><br></pre></td></tr></table></figure>
+<p>사전에 정의 했던 “hello world” 메시지를 입력했네요. 이제 핸드폰을 통해 이벤트 발생 메시지를 통보 받을 수 있습니다.</p>
+<p><img src="/assets/ncloud-sens-05.png" alt=""></p>
+<p>지금까지 기술한 예제는 아주 간단한 로직을 다루었으며, 추가 요구 사항에 따라 세부 로직을 추가하여</p>
+<p>나만의 통보시스템을 보강할 수 있겠습니다.</p>
+<p>지금까지 설명한 예제는 <a href="https://github.com/mosfet1kg/ncloudLog" target="_blank" rel="noopener">https://github.com/mosfet1kg/ncloudLog</a> 에서 확인할 수 있습니다.</p>
+
+        
+    </section>
+</article>
+
+
+
+<div class="comments">
+    <div id="disqus_thread">
+        <p class="comment-tips">国内查看评论需要代理~</p>
+    </div>
+    <script>
+    window.disqus_config = function () {
+        this.language = 'ko';
+        this.page.url = 'https://mosfet1kg.github.io/2018/03/04/ncloud/sens-01/';
+        this.page.title = 'Ncloud SENS를 이용하여 나만의 이벤트 통보 시스템 만들기';
+        this.page.identifier = '2018/03/04/ncloud/sens-01/';
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://mosfet1kg.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+</div>
+        <!-- <footer class="footer">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme by <a href="https://github.com/sanonz/hexo-theme-concise" target="_blank">Concise</a>
+</footer>
+ -->
+
+    </div>
+
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/1.9.0/jquery.min.js"></script>
+    
+    <script type="text/javascript" src="/js/scrollspy.min.js"></script>
+    
+    <script type="text/javascript">
+        $(function() {
+            var nodes = {
+                nav: $('#nav'),
+                aside: $('#aside'),
+                navTags: $('#nav-tags')
+            };
+
+            $('#open-panel, #aside-mask').on('click', function() {
+                nodes.aside.toggleClass('panel-show');
+            });
+            $('#nav-tag').on('click', function(event) {
+                event.preventDefault();console.log(nodes.navTags.attr('class'))
+                nodes.navTags.toggleClass('tag-show');console.log(nodes.navTags.attr('class'))
+            })/*.hover(function() {
+                nodes.navTags.addClass('tag-show');
+            }, function() {
+                nodes.navTags.removeClass('tag-show');
+            });*/
+
+            
+            $(document.body).scrollspy({target: '#aside-inner'});
+            
+        });
+    </script>
+
+</body>
+</html>
